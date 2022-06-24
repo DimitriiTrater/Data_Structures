@@ -27,11 +27,15 @@ class DbList:
             self.tail.prev_node.next_node = self.tail
             return element
 
-    def __del(self, index, reverse=False):
+    def _del(self, index, reverse=False):
         if index == 0:
             el = self.head.element
-            self.head = self.head.next_node
-            self.head.prev_node = None
+
+            if self.head.next_node:
+                self.head = self.head.next_node
+                self.head.prev_node = None
+            else:
+                self.head = None
             return el
         elif index == self.length - 1:
             el = self.tail.element
@@ -68,13 +72,13 @@ class DbList:
     def delete(self, index):
         if self.head:
             if index > self.length // 2:
-                el = self.__del(index, reverse=True)
+                el = self._del(index, reverse=True)
             elif index <= self.length // 2:
-                el = self.__del(index, reverse=False)
+                el = self._del(index, reverse=False)
             self.length -= 1
             return el
 
-    def __assign(self, index, element, reverse=False):
+    def _assign(self, index, element, reverse=False):
         if index == 0:
             self.head.element = element
         elif index == self.length - 1:
@@ -101,25 +105,29 @@ class DbList:
     def assign(self, index, element):
         if self.head:
             if index > self.length // 2:
-                self.__assign(index, element, reverse=True)
+                self._assign(index, element, reverse=True)
             elif index <= self.length // 2:
-                self.__assign(index, element, reverse=False)
+                self._assign(index, element, reverse=False)
+
+    def is_empty(self):
+        return self.length == 0
 
     def __str__(self):
         node = self.head
         line = '['
-        while node.next_node:
-            line += str(node.element) + ','
-            node = node.next_node
-        line += str(node.element) + ']'
-        return line
+        try:
+            while node.next_node:
+                line += str(node.element) + ','
+                node = node.next_node
+            line += str(node.element) + ']'
+            return line
+        except AttributeError:
+            return line + ']'
 
 
 if __name__ == '__main__':
     a = DbList()
     a.append(7)
-    a.append(3)
-    a.append(5)
-    a.delete(1)
-    a.assign(0, 1000)
-    print(a, a.length)
+    a.delete(0)
+
+    print(a)  # []
